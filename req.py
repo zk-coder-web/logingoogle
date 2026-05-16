@@ -1,6 +1,6 @@
 import requests
 
-base_url = "https://verifyig.onrender.com"
+base_url = "https://verifyigusers.onrender.com/"
 
 username = input("Insira o usuário: ").strip()
 

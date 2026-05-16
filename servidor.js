@@ -104,7 +104,7 @@ app.get('/check/:username', (req, res) => {
     console.log(`[API] Verificando @${username}`);
 
     // python3 no Render Linux
-    const pythonProcess = spawn('python3', [
+    const pythonProcess = spawn('python', [
         path.join(__dirname, 'checker.py'),
         username
     ]);
