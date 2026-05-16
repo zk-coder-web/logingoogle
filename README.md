@@ -5,21 +5,35 @@ Mini sistema para testar autenticação com Google OAuth 2.0 com backend Node.js
 ## 🚀 Como Rodar Localmente
 
 ### Pré-requisitos
-- Node.js instalado
+- Python 3.8+
+- pip
 
-### Passo 1: Rodar o Servidor
+### Passo 1: Instalar Dependências
 ```bash
 cd google_login
-node server.js
+pip install -r requirements.txt
+```
+
+### Passo 2: Configurar Variáveis de Ambiente
+Crie um arquivo `.env`:
+```
+GOOGLE_CLIENT_ID=seu-id-aqui
+GOOGLE_CLIENT_SECRET=seu-secret-aqui
+REDIRECT_URI=http://localhost:3000/callback
+PORT=3000
+```
+
+### Passo 3: Rodar o Servidor
+```bash
+python app.py
 ```
 
 Você verá:
 ```
-Servidor rodando em http://localhost:3000
-Acesse: http://localhost:3000
+ * Running on http://localhost:3000
 ```
 
-### Passo 2: Testar
+### Passo 4: Testar
 1. Abra `http://localhost:3000` no navegador
 2. Cole seu **Google Client ID**
 3. Clique em "Login com Google"
