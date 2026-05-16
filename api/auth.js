@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -26,6 +26,10 @@ export default async function handler(req, res) {
     const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
     const REDIRECT_URI = process.env.REDIRECT_URI;
 
+    console.log('CLIENT_ID:', CLIENT_ID ? 'OK' : 'MISSING');
+    console.log('CLIENT_SECRET:', CLIENT_SECRET ? 'OK' : 'MISSING');
+    console.log('REDIRECT_URI:', REDIRECT_URI ? 'OK' : 'MISSING');
+
     if (!CLIENT_ID || !CLIENT_SECRET || !REDIRECT_URI) {
       res.status(500).json({ error: 'Variáveis de ambiente não configuradas' });
       return;
@@ -47,7 +51,7 @@ export default async function handler(req, res) {
     if (!tokenResponse.ok) {
       const error = await tokenResponse.text();
       console.error('Token error:', error);
-      throw new Error('Falha ao obter token');
+      throw new Error('Falha ao obter token: ' + error);
     }
 
     const tokenData = await tokenResponse.json();
@@ -77,4 +81,4 @@ export default async function handler(req, res) {
     console.error('Erro:', error);
     res.status(500).json({ error: error.message });
   }
-}
+};
