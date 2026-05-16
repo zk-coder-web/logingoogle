@@ -1,68 +1,30 @@
 # 🔐 Google Login Test
 
-Mini sistema para testar autenticação com Google OAuth 2.0 com backend Node.js
+Mini sistema para testar autenticação com Google OAuth 2.0 (HTML + JavaScript)
 
-## 🚀 Como Rodar Localmente
+## 🚀 Como Usar
 
-### Pré-requisitos
-- Python 3.8+
-- pip
+### 1. Abrir o Sistema
+- Abra `index.html` no navegador
+- Ou acesse: `https://logingoogle-flame.vercel.app`
 
-### Passo 1: Instalar Dependências
-```bash
-cd google_login
-pip install -r requirements.txt
-```
-
-### Passo 2: Configurar Variáveis de Ambiente
-Crie um arquivo `.env`:
-```
-GOOGLE_CLIENT_ID=seu-id-aqui
-GOOGLE_CLIENT_SECRET=seu-secret-aqui
-REDIRECT_URI=http://localhost:3000/callback
-PORT=3000
-```
-
-### Passo 3: Rodar o Servidor
-```bash
-python app.py
-```
-
-Você verá:
-```
- * Running on http://localhost:3000
-```
-
-### Passo 4: Testar
-1. Abra `http://localhost:3000` no navegador
-2. Cole seu **Google Client ID**
-3. Clique em "Login com Google"
-4. Selecione sua conta Google
-5. Você verá seu **nome, email e foto**! 🎉
-
----
-
-## 📋 Como Usar
-
-### 1. Configurar
+### 2. Configurar
 - **Google Client ID**: Seu ID do Google Console
-- **Redirect URI**: `http://localhost:3000/callback`
+- **Redirect URI**: `https://logingoogle-flame.vercel.app/callback.html`
 
-### 2. Salvar Configurações
+### 3. Salvar Configurações
 - Clique em "💾 Salvar Config"
 - As configurações são salvas no localStorage
 
-### 3. Fazer Login
+### 4. Fazer Login
 - Clique em "🔵 Login com Google"
 - Você será redirecionado para o Google
 - Selecione sua conta Google
-- Será redirecionado de volta com seus dados!
+- Será redirecionado de volta com o código de autorização
 
-### 4. Resultado
-- ✅ Nome
-- ✅ Email
-- ✅ ID do Google
-- ✅ Foto de Perfil
+### 5. Resultado
+- Se bem-sucedido, você verá o código de autorização
+- Este código deve ser trocado por um token de acesso no seu backend
 
 ---
 
@@ -73,9 +35,9 @@ Você verá:
 3. Vá em **Credenciais** → **Criar Credenciais** → **ID do Cliente OAuth 2.0**
 4. Selecione **Aplicativo da Web**
 5. Em **Origens JavaScript autorizadas**, adicione (SEM / no final):
-   - `http://localhost:3000` (desenvolvimento)
+   - `https://logingoogle-flame.vercel.app`
 6. Em **URIs de redirecionamento autorizados**, adicione:
-   - `http://localhost:3000/callback` (desenvolvimento)
+   - `https://logingoogle-flame.vercel.app/callback.html`
 7. Copie o **Client ID** e cole no formulário
 
 ---
@@ -83,67 +45,43 @@ Você verá:
 ## 📝 Arquivos
 
 - **index.html** - Página principal com formulário
-- **callback.html** - Página que recebe os dados do usuário
-- **server.js** - Backend Node.js que troca código por token
+- **callback.html** - Página que recebe o código do Google
 - **README.md** - Este arquivo
 
 ---
 
-## 🔐 Como Funciona
+## 🚀 Próximos Passos
 
-1. **Frontend** (index.html):
-   - Redireciona para Google OAuth
-   - Recebe o código de autorização
+Depois de testar o login:
 
-2. **Backend** (server.js):
-   - Troca o código por um token de acesso
-   - Obtém os dados do usuário do Google
-   - Retorna os dados para o frontend
+1. Pegue o código de autorização recebido
+2. No seu backend, troque o código por um token de acesso:
+   ```bash
+   POST https://oauth2.googleapis.com/token
+   
+   {
+     "code": "seu-codigo-aqui",
+     "client_id": "seu-client-id",
+     "client_secret": "seu-client-secret",
+     "redirect_uri": "https://logingoogle-flame.vercel.app/callback.html",
+     "grant_type": "authorization_code"
+   }
+   ```
 
-3. **Frontend** (callback.html):
-   - Exibe os dados do usuário (nome, email, foto)
+3. Use o token de acesso para obter informações do usuário:
+   ```bash
+   GET https://www.googleapis.com/oauth2/v2/userinfo
+   Authorization: Bearer seu-access-token
+   ```
 
 ---
 
 ## ⚠️ Segurança
 
-- ✅ `Client Secret` fica apenas no backend (server.js)
-- ✅ Frontend não expõe secrets
-- ✅ Comunicação segura entre frontend e backend
-- ⚠️ Em produção, use HTTPS e variáveis de ambiente
-
----
-
-## 🚀 Deploy em Produção
-
-Para fazer deploy em produção:
-
-1. Use um serviço como Heroku, Railway ou Vercel
-2. Configure as variáveis de ambiente:
-   - `GOOGLE_CLIENT_ID`
-   - `GOOGLE_CLIENT_SECRET`
-   - `REDIRECT_URI`
-3. Atualize o Google Console com as URLs de produção
-
----
-
-## 🐛 Troubleshooting
-
-### "Erro: redirect_uri_mismatch"
-- Verifique se o Redirect URI no Google Console é exatamente igual
-- Inclua o protocolo (http:// ou https://)
-
-### "Erro: invalid_client"
-- Verifique se o Client ID está correto
-- Certifique-se de que o projeto está ativo
-
-### Servidor não inicia
-- Verifique se a porta 3000 está disponível
-- Tente: `node server.js`
-
-### Dados do usuário não aparecem
-- Verifique o console do navegador (F12)
-- Certifique-se de que o servidor está rodando
+- **Nunca** compartilhe seu `Client Secret`
+- **Nunca** coloque o `Client Secret` no frontend
+- O `Client Secret` deve ficar apenas no backend
+- Este é apenas um teste - em produção, use um backend seguro
 
 ---
 
@@ -151,5 +89,4 @@ Para fazer deploy em produção:
 
 - [Google OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)
 - [Google Sign-In for Web](https://developers.google.com/identity/sign-in/web)
-- [Node.js HTTP Server](https://nodejs.org/en/docs/guides/nodejs-http-server/)
 
