@@ -220,45 +220,58 @@
                 return;
             }
 
-            // Mostrar sucesso com o código
-            setTimeout(() => {
+            // Trocar código por token no backend
+            try {
+                const response = await fetch('/api/auth/token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Falha ao obter dados do usuário');
+                }
+
+                const data = await response.json();
+                const user = data.user;
+
+                // Mostrar sucesso com dados do usuário
+                setTimeout(() => {
+                    loadingDiv.style.display = 'none';
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h2>✅ Bem-vindo, ${user.name}!</h2>
+                        <div class="greeting">👋</div>
+                        
+                        <div class="user-info">
+                            <p><strong>Nome:</strong> ${user.name}</p>
+                            <p><strong>Email:</strong> ${user.email}</p>
+                            <p><strong>ID Google:</strong> ${user.id}</p>
+                            ${user.picture ? `<p><strong>Foto:</strong><br><img src="${user.picture}" style="width: 80px; height: 80px; border-radius: 50%; margin-top: 10px;"></p>` : ''}
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn-back" onclick="window.location.href='index.html'">← Voltar</button>
+                        </div>
+                    `;
+                    resultDiv.style.display = 'block';
+                }, 1500);
+            } catch (err) {
+                console.error('Erro:', err);
                 loadingDiv.style.display = 'none';
-                resultDiv.className = 'result success';
+                resultDiv.className = 'result error';
                 resultDiv.innerHTML = `
-                    <h2>✅ Login Bem-Sucedido!</h2>
-                    <div class="greeting">👋</div>
-                    <p style="font-size: 16px; color: #333;">Código de autorização recebido com sucesso!</p>
-                    
-                    <div class="user-info">
-                        <p><strong>Status:</strong> Autenticado</p>
-                        <p><strong>Código:</strong></p>
-                        <div class="code-box" id="codeBox">${code}</div>
-                        <div class="copy-feedback" id="copyFeedback">✓ Copiado!</div>
-                    </div>
-
-                    <p style="margin-top: 15px; font-size: 12px; color: #666;">
-                        <strong>Próximo passo:</strong> Envie este código para seu backend para trocar por um token de acesso.
+                    <h2>❌ Erro ao Processar</h2>
+                    <p>${err.message}</p>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        Certifique-se de que o servidor está rodando em http://localhost:3000
                     </p>
-
                     <div class="button-group">
-                        <button class="btn-copy" onclick="copyCode()">📋 Copiar Código</button>
                         <button class="btn-back" onclick="window.location.href='index.html'">← Voltar</button>
                     </div>
                 `;
                 resultDiv.style.display = 'block';
-            }, 1500);
-        }
-
-        function copyCode() {
-            const codeBox = document.getElementById('codeBox');
-            const feedback = document.getElementById('copyFeedback');
-            
-            navigator.clipboard.writeText(codeBox.textContent).then(() => {
-                feedback.style.display = 'block';
-                setTimeout(() => {
-                    feedback.style.display = 'none';
-                }, 2000);
-            });
+            }
         }
 
         // Processar callback quando a página carregar
