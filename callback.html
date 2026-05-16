@@ -220,33 +220,13 @@
                 return;
             }
 
-            // Mostrar sucesso com o código
+            // Armazenar código no localStorage para usar depois
+            localStorage.setItem('googleAuthCode', code);
+
+            // Redirecionar para página de dados do usuário
             setTimeout(() => {
-                loadingDiv.style.display = 'none';
-                resultDiv.className = 'result success';
-                resultDiv.innerHTML = `
-                    <h2>✅ Login Bem-Sucedido!</h2>
-                    <div class="greeting">👋</div>
-                    <p style="font-size: 16px; color: #333;">Código de autorização recebido com sucesso!</p>
-                    
-                    <div class="user-info">
-                        <p><strong>Status:</strong> Autenticado</p>
-                        <p><strong>Código:</strong></p>
-                        <div class="code-box" id="codeBox">${code}</div>
-                        <div class="copy-feedback" id="copyFeedback">✓ Copiado!</div>
-                    </div>
-
-                    <p style="margin-top: 15px; font-size: 12px; color: #666;">
-                        <strong>Próximo passo:</strong> Envie este código para seu backend para trocar por um token de acesso.
-                    </p>
-
-                    <div class="button-group">
-                        <button class="btn-copy" onclick="copyCode()">📋 Copiar Código</button>
-                        <button class="btn-back" onclick="window.location.href='index.html'">← Voltar</button>
-                    </div>
-                `;
-                resultDiv.style.display = 'block';
-            }, 1500);
+                window.location.href = 'user.html';
+            }, 1000);
         }
 
         function copyCode() {
