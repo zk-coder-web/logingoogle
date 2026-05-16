@@ -2,7 +2,7 @@ import subprocess
 
 comandos = [
     ["git", "add", "."],
-    ["git", "commit", "-m", "verify - ig"],
+    ["git", "commit", "-m", "verify - New Commit"],
     ["git", "branch", "-M", "main"],
     ["git", "push", "-u", "origin", "main"]
 ]
