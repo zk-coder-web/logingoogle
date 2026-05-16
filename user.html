@@ -165,52 +165,25 @@
                     throw new Error('Código de autorização não encontrado. Faça login novamente.');
                 }
 
-                // Obter o Client ID do localStorage
-                const clientId = localStorage.getItem('googleClientId');
-                
-                if (!clientId) {
-                    throw new Error('Client ID não configurado. Configure na página anterior.');
-                }
-
-                // Obter o Redirect URI do localStorage
-                const redirectUri = localStorage.getItem('googleRedirectUri');
-
-                // Trocar código por token usando CORS proxy
-                const tokenResponse = await fetch('https://cors-anywhere.herokuapp.com/https://oauth2.googleapis.com/token', {
+                // Chamar o backend para trocar código por dados do usuário
+                const response = await fetch('/api/auth', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        code,
-                        client_id: clientId,
-                        client_secret: '', // Não pode ser feito no frontend
-                        redirect_uri: redirectUri,
-                        grant_type: 'authorization_code',
-                    }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code }),
                 });
 
-                if (!tokenResponse.ok) {
-                    // Se falhar, mostrar mensagem alternativa
-                    throw new Error('Não é possível obter dados do usuário sem um backend. Use o código para fazer a troca no seu servidor.');
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Falha ao obter dados');
                 }
 
-                const tokenData = await tokenResponse.json();
-                const accessToken = tokenData.access_token;
-
-                // Obter informações do usuário
-                const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                });
-
-                if (!userResponse.ok) {
-                    throw new Error('Falha ao obter dados do usuário');
-                }
-
-                const userData = await userResponse.json();
+                const data = await response.json();
+                const userData = data.user;
 
                 // Mostrar dados do usuário
                 loadingDiv.style.display = 'none';
                 resultDiv.innerHTML = `
-                    <h1>✅ Bem-vindo!</h1>
+                    <h1>✅ Bem-vindo, ${userData.name}!</h1>
                     <div class="greeting">👋</div>
                     
                     <div class="user-card">
@@ -233,14 +206,8 @@
                 loadingDiv.style.display = 'none';
                 resultDiv.className = 'error';
                 resultDiv.innerHTML = `
-                    <h2>⚠️ Informação</h2>
+                    <h2>❌ Erro</h2>
                     <p>${err.message}</p>
-                    <p style="margin-top: 15px; font-size: 12px;">
-                        Para obter os dados do usuário, você precisa de um backend que:
-                        <br>1. Receba o código de autorização
-                        <br>2. Troque por um token de acesso (usando o Client Secret)
-                        <br>3. Retorne os dados do usuário
-                    </p>
                     <div class="button-group">
                         <button class="btn-back" onclick="window.location.href='index.html'">← Voltar</button>
                     </div>
