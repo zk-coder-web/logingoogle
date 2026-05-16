@@ -220,88 +220,33 @@
                 return;
             }
 
-            // Obter dados do usuário usando o código
-            try {
-                const clientId = localStorage.getItem('googleClientId');
-                const redirectUri = localStorage.getItem('googleRedirectUri');
-                const clientSecret = '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'; // Em produção, isso deve vir do backend!
-
-                // Trocar código por token
-                const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({
-                        code,
-                        client_id: clientId,
-                        client_secret: clientSecret,
-                        redirect_uri: redirectUri,
-                        grant_type: 'authorization_code',
-                    }),
-                });
-
-                if (!tokenResponse.ok) {
-                    throw new Error('Falha ao obter token');
-                }
-
-                const tokenData = await tokenResponse.json();
-                const accessToken = tokenData.access_token;
-
-                // Obter informações do usuário
-                const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                });
-
-                if (!userResponse.ok) {
-                    throw new Error('Falha ao obter dados do usuário');
-                }
-
-                const userData = await userResponse.json();
-
-                // Mostrar sucesso com dados do usuário
-                setTimeout(() => {
-                    loadingDiv.style.display = 'none';
-                    resultDiv.className = 'result success';
-                    resultDiv.innerHTML = `
-                        <h2>✅ Bem-vindo, ${userData.name}!</h2>
-                        <div class="greeting">👋</div>
-                        
-                        <div class="user-info">
-                            <p><strong>Nome:</strong> ${userData.name}</p>
-                            <p><strong>Email:</strong> ${userData.email}</p>
-                            <p><strong>ID Google:</strong> ${userData.id}</p>
-                            <p><strong>Foto:</strong> <img src="${userData.picture}" style="width: 50px; height: 50px; border-radius: 50%; margin-top: 5px;"></p>
-                        </div>
-
-                        <p style="margin-top: 15px; font-size: 12px; color: #666;">
-                            <strong>Código de Autorização:</strong>
-                        </p>
+            // Mostrar sucesso com o código
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `
+                    <h2>✅ Login Bem-Sucedido!</h2>
+                    <div class="greeting">👋</div>
+                    <p style="font-size: 16px; color: #333;">Código de autorização recebido com sucesso!</p>
+                    
+                    <div class="user-info">
+                        <p><strong>Status:</strong> Autenticado</p>
+                        <p><strong>Código:</strong></p>
                         <div class="code-box" id="codeBox">${code}</div>
                         <div class="copy-feedback" id="copyFeedback">✓ Copiado!</div>
+                    </div>
 
-                        <div class="button-group">
-                            <button class="btn-copy" onclick="copyCode()">📋 Copiar Código</button>
-                            <button class="btn-back" onclick="window.location.href='index.html'">← Voltar</button>
-                        </div>
-                    `;
-                    resultDiv.style.display = 'block';
-                }, 1500);
-            } catch (err) {
-                console.error('Erro:', err);
-                loadingDiv.style.display = 'none';
-                resultDiv.className = 'result error';
-                resultDiv.innerHTML = `
-                    <h2>❌ Erro ao Processar</h2>
-                    <p>${err.message}</p>
-                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                        <strong>Nota:</strong> O Client Secret não pode ser exposto no frontend. 
-                        Use um backend para trocar o código por token de forma segura.
+                    <p style="margin-top: 15px; font-size: 12px; color: #666;">
+                        <strong>Próximo passo:</strong> Envie este código para seu backend para trocar por um token de acesso.
                     </p>
+
                     <div class="button-group">
+                        <button class="btn-copy" onclick="copyCode()">📋 Copiar Código</button>
                         <button class="btn-back" onclick="window.location.href='index.html'">← Voltar</button>
                     </div>
                 `;
                 resultDiv.style.display = 'block';
-            }
+            }, 1500);
         }
 
         function copyCode() {
